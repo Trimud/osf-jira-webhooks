@@ -1,10 +1,6 @@
 ## Introduction
 
-This repo is a **barebone minimalistic** starter-kit for TypeScript-based ExpressJS (https://expressjs.com/) app.
-
-## Simplicity
-
-In order to build and run the app, you have to execute only 2 NPM script commands.
+Use *Github Webhooks* to transition JIRA tickets statuses
 
 ## Dependencies
 
@@ -32,3 +28,7 @@ Build:
 Run ExpressJS server:
 
 `$ yarn start`
+
+Run ExpressJS development server:
+
+`$ yarn dev`
