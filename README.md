@@ -12,6 +12,7 @@ Use *Github Webhooks* to transition JIRA tickets statuses
 * Eventsource
 * Nodemon (Used for local development)
 * @octokit/webhooks
+* Simple Node Logger
 * TypeScript
 * Yarn (or) NPM
 

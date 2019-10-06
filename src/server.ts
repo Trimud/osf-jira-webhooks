@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import WebhooksApi from '@octokit/webhooks';
 import EventSource from 'eventsource';
 import app from './app';
+import log from './lib/logger';
 import { NODE_ENV, PORT, SECRET } from './config';
 
 app.use(helmet()); // set well-known security-related HTTP headers
@@ -32,6 +33,7 @@ if (NODE_ENV === 'development') {
 
 webhooks.on('*', ({id, name, payload }) => {
     console.log(name, 'event received');
+    log.info(`Received event '${name}' at ${new Date().toUTCString()}`);
 });
 
 const server = app.listen(port, () => {

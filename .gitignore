@@ -8,6 +8,9 @@ yarn-error.log*
 # node modules
 node_modules/
 
+#log files
+logs/**.*
+
 # build output folder
 dist/
 .env
