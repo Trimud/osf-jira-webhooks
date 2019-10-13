@@ -4,17 +4,19 @@ import WebhooksApi from '@octokit/webhooks';
 import EventSource from 'eventsource';
 import app from './app';
 import log from './lib/logger';
-import { NODE_ENV, PORT, SECRET } from './config';
+import { findIssue, listTransitions, transitionIssue } from './lib/jira';
+import { NODE_ENV, PORT } from './config';
+
+const port: String = PORT || '4000';
+const ticketRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/g;
+const webhooks = new WebhooksApi({
+    secret: 'santa' // TODO: Use SECRET from .env vars
+});
 
 app.use(helmet()); // set well-known security-related HTTP headers
 app.use(compression());
 
 app.disable('x-powered-by');
-
-const port: String = PORT || '4000';
-const webhooks = new WebhooksApi({
-    secret: 'santa' // TODO: use from .env file
-});
 
 // Use WebhookproxyURL 3rd party service
 if (NODE_ENV === 'development') {
@@ -31,9 +33,50 @@ if (NODE_ENV === 'development') {
     }
 }
 
-webhooks.on('*', ({id, name, payload }) => {
-    console.log(name, 'event received');
-    log.info(`Received event '${name}' at ${new Date().toUTCString()}`);
+// Push webhook is triggered on pushed commit to the repo
+webhooks.on('push', async ({id, name, payload }) => {
+    log.info(`Webhooks: Received '${name}' event with id '${id}'`);
+
+    const commitMessage = payload.commits[0].message;
+    const ticketIDArr = commitMessage.match(ticketRegex);
+
+    // Exit if there are no ticket numbers written in commit message
+    if (!ticketIDArr.length) return;
+
+    for (const ticketID of ticketIDArr) {
+        let hasValidTicketID = await findIssue(ticketID);
+
+        if (!hasValidTicketID) {
+            continue;
+        }
+
+        let transitionIDs = await listTransitions(ticketID);
+
+        // Check if transition ID is valid based on available transitions
+        // @ts-ignore: Object is possibly 'null'.
+        let issueCanBeTransitioned = transitionIDs.includes('91');
+
+        if (issueCanBeTransitioned) {
+            let transitionObject = {
+                transition: {
+                    id: 91 // The transition id from your Jira workflow
+                }
+            };
+
+            transitionIssue(ticketID, transitionObject);
+        }
+
+    }
+});
+
+// pull_request webhook is triggered when PR is opened
+// webhooks.on('pull_request', ({id, name, payload }) => {
+
+// });
+
+// Log errors
+webhooks.on('error', (error) => {
+    log.error(`Error ocurred in "${error.name} handler: ${error.stack}"`)
 });
 
 const server = app.listen(port, () => {

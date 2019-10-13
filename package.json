@@ -17,11 +17,13 @@
   "dependencies": {
     "@octokit/webhooks": "^6.3.1",
     "@types/eventsource": "^1.1.2",
+    "@types/jira-client": "^6.4.6",
     "compression": "^1.7.4",
     "dotenv": "^8.1.0",
     "eventsource": "^1.0.7",
     "express": "^4.17.1",
     "helmet": "^3.21.1",
+    "jira-client": "^6.12.0",
     "nodemon": "^1.19.3",
     "simple-node-logger": "^18.12.23"
   },
