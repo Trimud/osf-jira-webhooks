@@ -1,15 +1,15 @@
 import JiraApi from 'jira-client';
 import log from './logger';
-import { JIRA_PROTOCOL, JIRA_HOST, JIRA_BASE, JIRA_USERNAME, JIRA_PASSWORD, JIRA_API_VERSION,  } from '../config';
+import { JIRA } from '../config';
 
 // Initialize JIRA client
 const jira = new JiraApi({
-    protocol: JIRA_PROTOCOL,
-    host: 'dev.osf-global.com', // TODO: Use JIRA_HOST from .env
-    base: JIRA_BASE,
-    username: JIRA_USERNAME,
-    password: JIRA_PASSWORD,
-    apiVersion: JIRA_API_VERSION
+    protocol: JIRA.PROTOCOL,
+    host: JIRA.HOST as string,
+    base: JIRA.BASE,
+    username: JIRA.USERNAME,
+    password: JIRA.PASSWORD,
+    apiVersion: JIRA.API_VERSION
 });
 
 export const findIssue = async (issueNumber: string) => {

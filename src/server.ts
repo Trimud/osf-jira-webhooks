@@ -5,12 +5,13 @@ import EventSource from 'eventsource';
 import app from './app';
 import log from './lib/logger';
 import { findIssue, listTransitions, transitionIssue } from './lib/jira';
-import { NODE_ENV, PORT, TRANSITION_IDS } from './config';
+import { NODE_ENV, PORT, SECRET, TRANSITION_IDS } from './config';
+import { Transition } from './lib/webhooks/transitionIssue';
 
 const port: String = PORT || '4000';
 const ticketRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/g;
 const webhooks = new WebhooksApi({
-    secret: 'santa' // TODO: Use SECRET from .env vars
+    secret: SECRET as string
 });
 
 app.use(helmet()); // set well-known security-related HTTP headers
@@ -33,6 +34,16 @@ if (NODE_ENV === 'development') {
     }
 }
 
+// Log incoming webhook events
+webhooks.on('*', ({id, name, payload }) => {
+    if (NODE_ENV === 'development') {
+        console.log(`Webhooks: Received '${name}' event with id '${id}'`);
+    }
+
+    // Store info in the logs
+    log.info(`Webhooks: Received '${name}' event with id '${id}'`);
+});
+
 // Push webhook is triggered on pushed commit to the repo
 // Change JIRA ticket status to 'IN PROGRESS'
 webhooks.on('push', async ({id, name, payload }) => {
@@ -40,41 +51,30 @@ webhooks.on('push', async ({id, name, payload }) => {
     const ticketIDArr = commitMessage.match(ticketRegex);
     const TRANSITION_ID = TRANSITION_IDS.IN_PROGRESS; // The transition id from your Jira workflow
 
-    log.info(`Webhooks: Received '${name}' event with id '${id}'`);
-
     // Exit if there are no ticket numbers written in commit message
     if (!ticketIDArr.length) return;
 
-    for (const ticketID of ticketIDArr) {
-        let hasValidTicketID = await findIssue(ticketID);
-
-        if (!hasValidTicketID) {
-            continue;
-        }
-
-        let transitionIDs = await listTransitions(ticketID);
-
-        // Check if transition ID is valid based on available transitions
-        // @ts-ignore: Object is possibly 'null'.
-        let issueCanBeTransitioned = transitionIDs.includes(TRANSITION_ID);
-
-        if (issueCanBeTransitioned) {
-            let transitionObject = {
-                transition: {
-                    id: TRANSITION_ID
-                }
-            };
-
-            transitionIssue(ticketID, transitionObject);
-        }
-
-    }
+    let tr = new Transition(TRANSITION_ID as string, ticketIDArr);
+    tr.transitionJIRATicket();
 });
 
 // pull_request webhook is triggered when PR is opened
-// webhooks.on('pull_request', ({id, name, payload }) => {
+webhooks.on('pull_request', async ({id, name, payload }) => {
+    const pullRequestTitle = payload.pull_request.title;
+    const pullRequestBranch = payload.pull_request.head.ref;
+    let ticketIDArr = pullRequestTitle.match(ticketRegex);
+    const TRANSITION_ID = TRANSITION_IDS.AWAITING_REVIEW; // The transition id from your Jira workflow
 
-// });
+    if (!ticketIDArr.length && pullRequestBranch.match(ticketRegex).length > 0) {
+        ticketIDArr = pullRequestBranch.match(ticketRegex);
+    }
+
+    // Exit if there are no ticket IDs found either in commit message or branch name
+    if (!ticketIDArr.length) return;
+
+    let tr = new Transition(TRANSITION_ID as string, ticketIDArr);
+    tr.transitionJIRATicket();
+});
 
 // Log errors
 webhooks.on('error', (error) => {
