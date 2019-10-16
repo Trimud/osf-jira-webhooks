@@ -11,9 +11,7 @@ export class Transition {
 
     async transitionJIRATicket() {
         const arr = this.ticketIDArr;
-        function* myGenerator(this: any) {
-            console.log(arr);
-
+        function* myGenerator(this: string) {
             while (arr.length) {
               yield arr.shift();
             }

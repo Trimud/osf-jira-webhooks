@@ -4,7 +4,6 @@ import WebhooksApi from '@octokit/webhooks';
 import EventSource from 'eventsource';
 import app from './app';
 import log from './lib/logger';
-import { findIssue, listTransitions, transitionIssue } from './lib/jira';
 import { NODE_ENV, PORT, SECRET, TRANSITION_IDS } from './config';
 import { Transition } from './lib/webhooks/transitionIssue';
 
