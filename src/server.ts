@@ -8,7 +8,7 @@ import { NODE_ENV, PORT, SECRET, TRANSITION_IDS } from './config';
 import { Transition } from './lib/webhooks/transitionIssue';
 
 const port: String = PORT || '4000';
-const ticketRegex = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/g;
+const ticketRegex: RegExp = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/g;
 const webhooks = new WebhooksApi({
     secret: SECRET as string
 });
@@ -52,23 +52,36 @@ webhooks.on('push', async ({id, name, payload }) => {
 
     // Exit if there are no ticket numbers written in commit message
     if (!ticketIDArr.length) return;
+console.log(ticketIDArr);
 
     let tr = new Transition(TRANSITION_ID as string, ticketIDArr);
     tr.transitionJIRATicket();
 });
 
 // pull_request webhook is triggered when PR is opened
+// Change JIRA ticket status to 'AWAITING REVIEW'
 webhooks.on('pull_request', async ({id, name, payload }) => {
     const pullRequestTitle = payload.pull_request.title;
     const pullRequestBranch = payload.pull_request.head.ref;
     let ticketIDArr = pullRequestTitle.match(ticketRegex);
-    const TRANSITION_ID = TRANSITION_IDS.AWAITING_REVIEW; // The transition id from your Jira workflow
+    let TRANSITION_ID = TRANSITION_IDS.AWAITING_REVIEW; // defaults to payload.action === 'opened'
+
+    if (payload.action === 'closed') {
+        TRANSITION_ID = TRANSITION_IDS.APPROVE_REVIEW; // defaults to payload.pull_request.merged === true
+
+        if (payload.pull_request.merged === false) {
+            TRANSITION_ID = TRANSITION_IDS.REJECT_REVIEW;
+        }
+    }
+
+    // Exit if no ticket number is found in PR title
+    if (ticketIDArr === null) return;
 
     if (!ticketIDArr.length && pullRequestBranch.match(ticketRegex).length > 0) {
         ticketIDArr = pullRequestBranch.match(ticketRegex);
     }
 
-    // Exit if there are no ticket IDs found either in commit message or branch name
+    // Exit if there are no ticket IDs found either in commit message or in branch name
     if (!ticketIDArr.length) return;
 
     let tr = new Transition(TRANSITION_ID as string, ticketIDArr);
