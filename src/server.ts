@@ -1,8 +1,8 @@
+import express from "express";
 import compression from 'compression';
 import helmet from 'helmet';
 import WebhooksApi from '@octokit/webhooks';
 import EventSource from 'eventsource';
-import app from './app';
 import log from './lib/logger';
 import { NODE_ENV, PORT, SECRET, TRANSITION_IDS } from './config';
 import { Transition } from './lib/webhooks/transitionIssue';
@@ -13,10 +13,10 @@ const webhooks = new WebhooksApi({
     secret: SECRET as string
 });
 
+// Run ExpressJS server
+const app = express();
 app.use(helmet()); // set well-known security-related HTTP headers
-app.use(compression());
-
-app.disable('x-powered-by');
+app.use(compression()); // Node.js compression middleware
 
 // Use WebhookproxyURL 3rd party service
 if (NODE_ENV === 'development') {
@@ -34,14 +34,11 @@ if (NODE_ENV === 'development') {
 }
 
 // Log incoming webhook events
-webhooks.on('*', ({id, name, payload }) => {
-    if (NODE_ENV === 'development') {
+if (NODE_ENV === 'development') {
+    webhooks.on('*', ({id, name, payload }) => {
         console.log(`Webhooks: Received '${name}' event with id '${id}'`);
-    }
-
-    // Store info in the logs
-    log.info(`Webhooks: Received '${name}' event with id '${id}'`);
-});
+    });
+}
 
 // Push webhook is triggered on pushed commit to the repo
 // Change JIRA ticket status to 'IN PROGRESS'
@@ -51,8 +48,7 @@ webhooks.on('push', async ({id, name, payload }) => {
     const TRANSITION_ID = TRANSITION_IDS.IN_PROGRESS; // The transition id from your Jira workflow
 
     // Exit if there are no ticket numbers written in commit message
-    if (!ticketIDArr.length) return;
-console.log(ticketIDArr);
+    if (!ticketIDArr) return;
 
     let tr = new Transition(TRANSITION_ID as string, ticketIDArr);
     tr.transitionJIRATicket();
