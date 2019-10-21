@@ -1,14 +1,14 @@
-import SimpleNodeLogger from 'simple-node-logger';
+// import SimpleNodeLogger from 'simple-node-logger';
 
-const opts = {
-    logDirectory: './logs',
-    fileNamePattern: 'logs-<DATE>.log',
-    dateFormat: 'DD.MM.YYYY'
-};
+// const opts = {
+//     logDirectory: './logs',
+//     fileNamePattern: 'logs-<DATE>.log',
+//     dateFormat: 'DD.MM.YYYY'
+// };
 
-const log = SimpleNodeLogger.createRollingFileLogger(opts);
+// const log = SimpleNodeLogger.createRollingFileLogger(opts);
 
-// Set log level
-log.setLevel('all');
+// // Set log level
+// log.setLevel('all');
 
-export default log;
+// export default log;
