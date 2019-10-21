@@ -89,6 +89,8 @@ webhooks.on('error', (error) => {
     log.error(`Error ocurred in "${error.name} handler: ${error.stack}"`)
 });
 
+app.get('/', (req, res) => res.send(`🚀 Server started on port ${port}`));
+
 const server = app.listen(port, () => {
     console.log(`🚀 Server started on http://localhost:${port}`);
 });
