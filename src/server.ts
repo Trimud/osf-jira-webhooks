@@ -3,7 +3,7 @@ import compression from 'compression';
 import helmet from 'helmet';
 import WebhooksApi from '@octokit/webhooks';
 import EventSource from 'eventsource';
-import log from './lib/logger';
+// import log from './lib/logger';
 import { NODE_ENV, PORT, SECRET, TRANSITION_IDS } from './config';
 import { Transition } from './lib/webhooks/transitionIssue';
 
@@ -86,7 +86,7 @@ webhooks.on('pull_request', async ({id, name, payload }) => {
 
 // Log errors
 webhooks.on('error', (error) => {
-    log.error(`Error ocurred in "${error.name} handler: ${error.stack}"`)
+    // log.error(`Error ocurred in "${error.name} handler: ${error.stack}"`)
 });
 
 app.get('/', (req, res) => res.send(`🚀 Server started on port ${port}`));
