@@ -1,9 +1,7 @@
-// import express from "express";
-// import compression from 'compression';
-// import helmet from 'helmet';
+import http from 'http';
 import WebhooksApi from '@octokit/webhooks';
 import EventSource from 'eventsource';
-// import log from './lib/logger';
+import log from './lib/logger';
 import { NODE_ENV, PORT, SECRET, TRANSITION_IDS } from './config';
 import { Transition } from './lib/webhooks/transitionIssue';
 
@@ -87,19 +85,15 @@ webhooks.on('pull_request', async ({id, name, payload }) => {
 
 // Log errors
 webhooks.on('error', (error) => {
-    // log.error(`Error ocurred in "${error.name} handler: ${error.stack}"`)
+    log.error(`Error ocurred in "${error.name} handler: ${error.stack}"`)
 });
 
-// app.get('/', (req, res) => res.send(`🚀 Server started on port ${port}`));
+const server = http.createServer((req, res) => {
+    res.statusCode = 200
+    res.setHeader('Content-Type', 'text/plain')
+    res.end(`Server started on port ${port}`)
+}).listen(port, () => {
+    console.log(`Server started on port ${port}`)
+});;
 
-// const server = app.listen(port, () => {
-//     console.log(`🚀 Server started on http://localhost:${port}`);
-// });
-
-require('http')
-  .createServer(webhooks.middleware)
-  .listen(port, () => {
-    console.log(`🚀 Server started on port ${port}`)
-  });
-
-// export default server;
+server.on('request', webhooks.middleware);

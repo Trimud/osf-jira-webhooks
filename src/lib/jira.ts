@@ -1,5 +1,5 @@
 import JiraApi from 'jira-client';
-// import log from './logger';
+import log from './logger';
 import { NODE_ENV } from '../config';
 import { JIRA } from '../config';
 
@@ -19,7 +19,7 @@ export const findIssue = async (issueNumber: string) => {
 
         return true;
     } catch (err) {
-        // log.error(`JIRA findIssue() error: ${JSON.stringify(err.message)}`);
+        log.error(`JIRA findIssue() error: ${JSON.stringify(err.message)}`);
         if (NODE_ENV === 'development') {
             console.log(err);
         }
@@ -39,7 +39,7 @@ export const listTransitions = async (issueNumber: string) => {
 
         return arr;
     } catch (err) {
-        // log.error(`JIRA listTransitions() error: ${JSON.stringify(err.message)}`);
+        log.error(`JIRA listTransitions() error: ${JSON.stringify(err.message)}`);
         if (NODE_ENV === 'development') {
             console.log(err);
         }
@@ -53,7 +53,7 @@ export const transitionIssue = async (issueNumber: string, issueTransition: obje
             console.log(`${issueNumber} has been transitioned successfully.`);
         }
     } catch (err) {
-        // log.error(`JIRA transitionIssue() error: ${JSON.stringify(err.message)}`);
+        log.error(`JIRA transitionIssue() error: ${JSON.stringify(err.message)}`);
         if (NODE_ENV === 'development') {
             console.log(err);
         }
