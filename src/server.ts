@@ -11,13 +11,7 @@ const webhooks = new WebhooksApi({
     secret: SECRET as string
 });
 
-// Run ExpressJS server
-// const app = express();
-// app.use(helmet()); // set well-known security-related HTTP headers
-// app.use(compression()); // Node.js compression middleware
-// app.use(webhooks.middleware); // use Webhooks middleware
-
-// Use WebhookproxyURL 3rd party service
+// Use WebhookproxyURL 3rd party service for local development
 if (NODE_ENV === 'development') {
     const webhookProxyUrl = 'https://smee.io/fD79ZlPmi9S7L5sp';
     const source = new EventSource(webhookProxyUrl)

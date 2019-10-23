@@ -4,17 +4,16 @@ Use *Github Webhooks* to transition JIRA tickets statuses
 
 ## Dependencies
 
-* Dotenv (Used for local development)
-* ExpressJS
-* ExpressJS Middlewares
-    * Compression - https://github.com/expressjs/compression
-    * Helmet - https://helmetjs.github.io/
-* Eventsource
-* Nodemon (Used for local development)
-* @octokit/webhooks
-* Simple Node Logger
-* TypeScript
+* [@octokit/webhooks](https://github.com/octokit/webhooks.js)
+* [JavaScript JIRA API for node.js](https://jira-node.github.io/)
+* [Simple Node Logger](https://github.com/darrylwest/simple-node-logger)
+* [TypeScript](https://www.typescriptlang.org/)
 * Yarn (or) NPM
+
+### Local Development
+* Dotenv
+* [Eventsource](https://github.com/EventSource/eventsource)
+* Nodemon
 
 ## Install, Build, Run
 
@@ -33,3 +32,13 @@ Run ExpressJS server:
 Run ExpressJS development server:
 
 `$ yarn dev`
+
+Watch ts files for changes and rebuild them:
+
+`$ yarn watch`
+
+## TODO
+
+- Delete old log files
+- Implement Slack notifications when build is completed
+- Trigger automatic CI builds
