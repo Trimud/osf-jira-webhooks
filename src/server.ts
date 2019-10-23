@@ -1,6 +1,6 @@
-import express from "express";
-import compression from 'compression';
-import helmet from 'helmet';
+// import express from "express";
+// import compression from 'compression';
+// import helmet from 'helmet';
 import WebhooksApi from '@octokit/webhooks';
 import EventSource from 'eventsource';
 // import log from './lib/logger';
@@ -14,10 +14,10 @@ const webhooks = new WebhooksApi({
 });
 
 // Run ExpressJS server
-const app = express();
-app.use(helmet()); // set well-known security-related HTTP headers
-app.use(compression()); // Node.js compression middleware
-app.use(webhooks.middleware); // set well-known security-related HTTP headers
+// const app = express();
+// app.use(helmet()); // set well-known security-related HTTP headers
+// app.use(compression()); // Node.js compression middleware
+// app.use(webhooks.middleware); // use Webhooks middleware
 
 // Use WebhookproxyURL 3rd party service
 if (NODE_ENV === 'development') {
@@ -90,10 +90,16 @@ webhooks.on('error', (error) => {
     // log.error(`Error ocurred in "${error.name} handler: ${error.stack}"`)
 });
 
-app.get('/', (req, res) => res.send(`🚀 Server started on port ${port}`));
+// app.get('/', (req, res) => res.send(`🚀 Server started on port ${port}`));
 
-const server = app.listen(port, () => {
-    console.log(`🚀 Server started on http://localhost:${port}`);
-});
+// const server = app.listen(port, () => {
+//     console.log(`🚀 Server started on http://localhost:${port}`);
+// });
 
-export default server;
+require('http')
+  .createServer(webhooks.middleware)
+  .listen(port, () => {
+    console.log(`🚀 Server started on port ${port}`)
+  });
+
+// export default server;
