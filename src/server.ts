@@ -17,6 +17,7 @@ const webhooks = new WebhooksApi({
 const app = express();
 app.use(helmet()); // set well-known security-related HTTP headers
 app.use(compression()); // Node.js compression middleware
+app.use(webhooks.middleware); // set well-known security-related HTTP headers
 
 // Use WebhookproxyURL 3rd party service
 if (NODE_ENV === 'development') {
