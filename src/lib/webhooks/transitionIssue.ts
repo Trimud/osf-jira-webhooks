@@ -10,6 +10,8 @@ export class Transition {
     }
 
     async transitionJIRATicket() {
+        // Using Async operators
+        // https://www.codementor.io/tiagolopesferreira/asynchronous-iterators-in-javascript-jl1yg8la1
         const arr = this.ticketIDArr;
         function* myGenerator(this: string) {
             while (arr.length) {
@@ -30,7 +32,6 @@ export class Transition {
             let transitionIDs = await listTransitions(ticketID as string);
 
             // Check if transition ID is valid based on available transitions
-            // @ts-ignore: Object is possibly 'null'.
             let issueCanBeTransitioned = transitionIDs.includes(this.transitionID);
 
             if (issueCanBeTransitioned) {
