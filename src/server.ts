@@ -4,6 +4,7 @@ import EventSource from 'eventsource';
 import log from './lib/logger';
 import { NODE_ENV, PORT, SECRET, TRANSITION_IDS } from './config';
 import { Transition } from './lib/webhooks/transitionIssue';
+import { deleteLogFiles } from './lib/filesRemove';
 
 const port: String = PORT || '4000';
 const ticketRegex: RegExp = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/g;
@@ -22,7 +23,7 @@ if (NODE_ENV === 'development') {
             name: webhookEvent['x-github-event'],
             signature: webhookEvent['x-hub-signature'],
             payload: webhookEvent.body
-        }).catch(console.error)
+        }).catch(console.error);
     }
 
     // Log incoming webhook events
@@ -80,12 +81,16 @@ webhooks.on('error', (error) => {
     log.error(`Error ocurred in "${error.name} handler: ${error.stack}"`)
 });
 
+// Delete log files on a daily basis
+setInterval( () => { deleteLogFiles() }, 86400000 );
+
+// Build Node.js server
 const server = http.createServer((req, res) => {
-    res.statusCode = 200
-    res.setHeader('Content-Type', 'text/plain')
-    res.end(`Server started on port ${port}`)
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.end(`Server started on port ${port}`);
 }).listen(port, () => {
-    console.log(`Server started on port ${port}`)
-});;
+    console.log(`Server started on port ${port}`);
+});
 
 server.on('request', webhooks.middleware);
