@@ -13,9 +13,10 @@ const jira = new JiraApi({
     apiVersion: JIRA.API_VERSION
 });
 
+// Get JIRA issue by number
 export const findIssue = async (issueNumber: string) => {
     try {
-        const issue = await jira.findIssue(issueNumber);
+        await jira.findIssue(issueNumber);
 
         return true;
     } catch (err) {
@@ -28,6 +29,7 @@ export const findIssue = async (issueNumber: string) => {
     }
 }
 
+// List Transitions for a specific issue that are available for the current ticket
 export const listTransitions = async (issueNumber: string) => {
     try {
         const response = await jira.listTransitions(issueNumber);
@@ -46,6 +48,7 @@ export const listTransitions = async (issueNumber: string) => {
     }
 }
 
+// Transition issue to selected issue status
 export const transitionIssue = async (issueNumber: string, issueTransition: object) => {
     try {
         await jira.transitionIssue(issueNumber, issueTransition);

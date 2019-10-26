@@ -40,5 +40,4 @@ Watch ts files for changes and rebuild them:
 ## TODO
 
 - Delete old log files
-- Implement Slack notifications when build is completed
-- Trigger automatic CI builds
+- Read config from Github repo

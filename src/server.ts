@@ -11,8 +11,8 @@ const webhooks = new WebhooksApi({
     secret: SECRET as string
 });
 
-// Use WebhookproxyURL 3rd party service for local development
 if (NODE_ENV === 'development') {
+    // Use WebhookproxyURL 3rd party service for local development
     const webhookProxyUrl = 'https://smee.io/fD79ZlPmi9S7L5sp';
     const source = new EventSource(webhookProxyUrl)
     source.onmessage = (event) => {
@@ -24,10 +24,8 @@ if (NODE_ENV === 'development') {
             payload: webhookEvent.body
         }).catch(console.error)
     }
-}
 
-// Log incoming webhook events
-if (NODE_ENV === 'development') {
+    // Log incoming webhook events
     webhooks.on('*', ({id, name, payload }) => {
         console.log(`Webhooks: Received '${name}' event with id '${id}'`);
     });
