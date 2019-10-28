@@ -39,5 +39,4 @@ Watch ts files for changes and rebuild them:
 
 ## TODO
 
-- Delete old log files
 - Read config from Github repo

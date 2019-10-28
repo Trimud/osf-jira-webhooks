@@ -1,7 +1,8 @@
 import fs from 'fs';
+import { DAYS_TO_KEEP_LOGS } from '../config';
 
 const PATH: string = './logs';
-const DAYS_OFFSET: number = 5;
+const DAYS_OFFSET = DAYS_TO_KEEP_LOGS as unknown as number;
 
 // Delete old log files
 export const deleteLogFiles = () => {

@@ -19,4 +19,5 @@ export const JIRA = {
 }
 export const NODE_ENV = process.env.NODE_ENV;
 export const PORT = process.env.PORT;
+export const DAYS_TO_KEEP_LOGS = process.env.DAYS_TO_KEEP_LOGS;
 export const SECRET = process.env.SECRET;

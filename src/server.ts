@@ -6,10 +6,10 @@ import { NODE_ENV, PORT, SECRET, TRANSITION_IDS } from './config';
 import { Transition } from './lib/webhooks/transitionIssue';
 import { deleteLogFiles } from './lib/filesRemove';
 
-const port: String = PORT || '4000';
+const port: String = PORT || '8080';
 const ticketRegex: RegExp = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/g;
 const webhooks = new WebhooksApi({
-    secret: SECRET as string
+    secret: SECRET
 });
 
 if (NODE_ENV === 'development') {
